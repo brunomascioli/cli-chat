@@ -10,12 +10,15 @@ Connection::Connection(int socket_fd)
 
 Connection::~Connection() 
 {
-    close(socket_fd);
+    if(socket_fd != -1) 
+    {
+        close(socket_fd);
+    }
 }
 
-Request* Connection::read() 
+std::unique_ptr<Request> Connection::receive_data() 
 {
-    ssize_t res = ::read(socket_fd, in_buffer.data(), in_buffer.size());
+    ssize_t res = read(socket_fd, in_buffer.data(), in_buffer.size());
     
     if (res < 0) 
     {
@@ -23,22 +26,23 @@ Request* Connection::read()
         return nullptr;
     }
 
-    std::cout << "Payload recebido: " << std::string(in_buffer.data(), res) << std::endl;        
+    
+    std::string payload(in_buffer.data(), res);
+    std::cout << "Payload recebido: " << payload << std::endl;        
 
-    auto req = new Request(std::string(in_buffer.data(), res));
-    return req;
+    return std::make_unique<Request>(std::move(payload));
 }
 
-ssize_t Connection::write(const char* data, size_t size) 
+ssize_t Connection::send_data(std::string_view data) 
 {
+
     ssize_t total_written = 0;
+    const char* buffer = data.data();
+    size_t size = data.size();
+
     while (total_written < static_cast<ssize_t>(size)) 
     {
-        ssize_t written = ::write(
-            socket_fd, 
-            data + total_written,
-            size - total_written
-        );
+        ssize_t written = write(socket_fd, buffer + total_written,size - total_written);
         
         if(written <= 0) 
         {
@@ -47,9 +51,8 @@ ssize_t Connection::write(const char* data, size_t size)
         }
 
         total_written += written;
-    
     }
-    
+
     return total_written;
 }
 

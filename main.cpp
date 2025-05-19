@@ -23,17 +23,17 @@ int main()
 
 		while (true)
 		{
-			auto request = conn->read();
+			auto request = conn->receive_data();
 
 			if (!request) 
 			{
 				std::cerr << "Erro: request é null!" << std::endl;
-				delete request;
 				continue;
 			}
 
 			std::cout << request->get_username() << " : " << request->get_message() << std::endl; 
-			delete request;
+			
+			conn->send_data(request->get_message());
 		}		
 	}
 

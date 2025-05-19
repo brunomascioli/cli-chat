@@ -29,12 +29,12 @@ void Request::parse(std::string payload)
     }
 }
 
-std::string Request::get_message() const
+std::string_view Request::get_message() const
 {
     return message;
 }
 
-std::string Request::get_username() const 
+std::string_view Request::get_username() const 
 {
     return username;
 }

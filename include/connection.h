@@ -23,11 +23,11 @@ private:
     std::vector<char> in_buffer;
 
 public:
-    Connection(int socket_fd);
+    explicit Connection(int socket_fd);
     ~Connection();
 
-    Request* read();
-    ssize_t write(const char* data, size_t size);
+    std::unique_ptr<Request> receive_data();
+    ssize_t send_data(std::string_view data);
 };
 
 }

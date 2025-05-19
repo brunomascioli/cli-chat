@@ -70,7 +70,6 @@ Connection* Server::accept_connection()
 
     if (!add_connection(std::move(conn))) 
     {
-        ::close(new_socket);
         std::cerr << "Limite de conexões atingido!" << std::endl;
         return nullptr;
     }
