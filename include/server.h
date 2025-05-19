@@ -8,6 +8,10 @@
 #include <cstdlib>
 #include <iostream>
 #include "connection.h"
+#include <array>
+
+namespace CliChat 
+{
 
 class Server 
 {
@@ -15,16 +19,20 @@ public:
     Server();
     ~Server();
 
+    std::vector<std::unique_ptr<Connection>> connections;
+
     int init(int port);
-    int close_server();
     Connection* accept_connection();
 private:
+    static constexpr size_t MAX_CONNECTIONS = 100;    
     int server_fd;
-    int new_socket;
     struct sockaddr_in address;
     socklen_t addrlen;
-    char* in_buffer;
+    
+    int close_server();
+    bool add_connection(std::unique_ptr<Connection> conn);
 };
 
+}
 
 #endif // SERVER_H

@@ -9,19 +9,27 @@
 #include <cstdlib>
 #include <iostream>
 #include "connection.h"
+#include "request.h"
+#include <vector>
+#include <memory>
+
+namespace CliChat
+{
 
 class Connection 
 {
 private:
     int socket_fd;
-    char* in_buffer;
+    std::vector<char> in_buffer;
 
 public:
     Connection(int socket_fd);
     ~Connection();
 
-    ssize_t read();
+    Request* read();
     ssize_t write(const char* data, size_t size);
 };
+
+}
 
 #endif // CONNECTION_H

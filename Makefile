@@ -1,16 +1,22 @@
-CC = gcc
-CFLAGS = -Wall -g
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -g -Iinclude 
+SRC = main.cpp src/connection.cpp src/request.cpp src/server.cpp
 
-all: main
+BUILD_DIR = build
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
+OBJ = $(SRC:.cpp=.o)
+OBJ := $(addprefix $(BUILD_DIR)/, $(OBJ))
 
-main: main.o
-	$(CC) -o main main.o
+TARGET = $(BUILD_DIR)/app
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CXX) -o $@ $^
+
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	-rm -rf main.o main
-
-run: main
-	./main
+	rm -rf $(BUILD_DIR)
