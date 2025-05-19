@@ -9,6 +9,7 @@
 #include <iostream>
 #include "connection.h"
 #include <array>
+#include <thread>
 
 namespace CliChat 
 {
@@ -28,8 +29,10 @@ private:
     int server_fd;
     struct sockaddr_in address;
     socklen_t addrlen;
-    
+
+    void run();
     int close_server();
+    void handle_client(Connection* conn);
     bool add_connection(std::unique_ptr<Connection> conn);
 };
 

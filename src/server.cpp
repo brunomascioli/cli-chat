@@ -3,6 +3,52 @@
 namespace CliChat
 {
 
+void Server::handle_client(Connection* conn)
+{
+    while (true)
+    {
+        auto request = conn->receive_data();
+
+        if (!request) 
+        {
+            std::cerr << "Erro: request é null!" << std::endl;
+            break;
+        }
+
+        std::cout << request->get_username() << " : " << request->get_message() << std::endl; 
+
+        for (const auto& connection : connections)
+        {
+            if (connection.get() != conn) 
+            {
+                connection->send_data(request->get_message());
+            }
+        }
+
+        if (request->get_message() == "exit") 
+        {
+            std::cout << "Cliente desconectado." << std::endl;
+            break;
+        }
+        
+    }		
+}
+
+void Server::run() 
+{
+    while (true)
+    {
+        auto conn = accept_connection();
+        if (!conn) 
+        {
+            std::cerr << "Erro: conexão inválida!" << std::endl;
+            continue;
+        }
+
+        std::thread(&Server::handle_client, this, conn).detach();
+    }
+}
+
 Server::Server()
     : server_fd(-1), addrlen(sizeof(address)) 
     {
@@ -35,7 +81,7 @@ int Server::init(int port)
         return -1;
     }
 
-    if (listen(server_fd, 3) < 0) 
+    if (listen(server_fd, SOMAXCONN) < 0) 
     {
         std::perror("listen failed");
         ::close(server_fd);
@@ -43,6 +89,8 @@ int Server::init(int port)
     }
 
     std::cout << "Server initialized and listening on port " << port << std::endl;
+
+    run();
 
     return 0;
 }
@@ -57,7 +105,7 @@ int Server::close_server()
     return 0;
 }
 
-Connection* Server::accept_connection() 
+Connection* Server::accept_connection()
 {
     int new_socket;
     if((new_socket = accept(server_fd, (sockaddr*)&address, &addrlen)) == -1)
