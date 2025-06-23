@@ -34,8 +34,8 @@ private:
     int close_server();
     void handle_client(Connection* conn);
     bool add_connection(std::unique_ptr<Connection> conn);
+    bool remove_connection(Connection* conn);
 };
-
 }
 
 #endif // SERVER_H

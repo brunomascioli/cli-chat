@@ -21,17 +21,34 @@ void Server::handle_client(Connection* conn)
         {
             if (connection.get() != conn) 
             {
-                connection->send_data(request->get_message());
+                connection->send_data(request->get_username() + " : " + request->get_message());
             }
         }
 
         if (request->get_message() == "exit") 
         {
             std::cout << "Cliente desconectado." << std::endl;
+            remove_connection(conn);
             break;
         }
-        
-    }		
+    }
+}
+
+bool Server::remove_connection(Connection* conn)
+{
+    int i = 0;
+    while (i < connections.size()) {
+        if (connections.at(i).get() == conn) {
+            break;
+        }
+        i++;
+    }
+
+    if (i < connections.size()) {
+        connections.erase(connections.begin() + i);
+        return true;
+    }
+    return false;
 }
 
 void Server::run() 
@@ -100,6 +117,7 @@ int Server::close_server()
     if (server_fd != -1) 
     {
         close(server_fd);
+        
         server_fd = -1;
     }
     return 0;

@@ -1,4 +1,4 @@
-CXX = g++
+aCXX = g++
 CXXFLAGS = -std=c++17 -Wall -g -Iinclude 
 SRC = main.cpp src/connection.cpp src/request.cpp src/server.cpp
 

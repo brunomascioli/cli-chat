@@ -14,8 +14,8 @@ private:
     void parse(std::string payload);
 public:
     Request(const std::string& payload);
-    std::string_view get_username() const;
-    std::string_view get_message() const;
+    std::string get_username() const;
+    std::string get_message() const;
 };
 
 }

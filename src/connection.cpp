@@ -26,9 +26,13 @@ std::unique_ptr<Request> Connection::receive_data()
         return nullptr;
     }
 
-    
+    if (res == 0) 
+    {
+        std::cerr << "Connection closed by peer" << std::endl;
+        return nullptr;
+    }
+
     std::string payload(in_buffer.data(), res);
-    std::cout << "Payload recebido: " << payload << std::endl;        
 
     return std::make_unique<Request>(std::move(payload));
 }
